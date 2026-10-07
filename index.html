@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بازی ضرب ششم ابتدایی | آموزگار: شادابی نیا</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+  * { box-sizing: border-box; font-family: 'Vazirmatn', Tahoma, sans-serif; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #4facfe);
+    background-size: 300% 300%;
+    animation: bgmove 18s ease infinite;
+    overflow-x: hidden;
+  }
+  @keyframes bgmove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .card {
+    width: min(600px, 100%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(14px);
+    border-radius: 30px;
+    padding: 28px 24px;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 25px 65px rgba(60, 30, 110, 0.3);
+    text-align: center;
+    animation: pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  }
+  @keyframes pop {
+    from { transform: scale(0.88); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .hidden { display: none !important; }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f43f5e, #a855f7);
+    color: #fff;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 9px 22px;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.4);
+  }
+
+  h1 {
+    font-size: clamp(22px, 6vw, 30px);
+    color: #581c87;
+    margin: 18px 0 8px;
+  }
+  h2 {
+    font-size: clamp(20px, 5.5vw, 26px);
+    color: #581c87;
+    margin: 8px 0;
+  }
+  p.sub {
+    color: #5b5b8a;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 8px 0 18px;
+    line-height: 1.9;
+  }
+
+  input {
+    width: 100%;
+    padding: 17px;
+    border-radius: 18px;
+    border: 2px solid #dbe4ff;
+    background: #f8faff;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    color: #3b3b98;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 5px rgba(168, 85, 247, 0.15);
+  }
+  .error {
+    color: #ef4444;
+    font-weight: 700;
+    font-size: 14px;
+    height: 20px;
+    margin-top: 8px;
+  }
+  .shake { animation: shake 0.45s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+
+  .btn {
+    width: 100%;
+    padding: 17px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+    background: linear-gradient(135deg, #f43f5e, #a855f7);
+    box-shadow: 0 9px 24px rgba(168, 85, 247, 0.42);
+    margin-top: 16px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: scale(0.97); box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3); }
+
+  .topbar {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .chip {
+    background: #eef2ff;
+    color: #3b3b98;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .chip.score { background: #fff3c4; color: #8a5a00; }
+  .chip.streak { background: #ffe4e6; color: #be123c; }
+  .chip.timer { background: #dbeafe; color: #1e40af; }
+  .chip.timer.danger { background: #fee2e2; color: #b91c1c; animation: pulse 0.6s infinite; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .quote {
+    margin: 16px 0 12px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff7d6, #ffe9f0);
+    border: 2px dashed #ffd166;
+    color: #8a5a00;
+    font-weight: 800;
+    font-size: 15px;
+    line-height: 1.9;
+  }
+
+  .progress {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 14px 0 6px;
+  }
+  #progressFill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #22c55e, #84cc16);
+    transition: width 0.4s ease;
+  }
+  .qmeta {
+    font-size: 14px;
+    font-weight: 800;
+    color: #7b7ba3;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .level-tag {
+    background: #f3e8ff;
+    color: #7e22ce;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+
+  .question {
+    direction: ltr;
+    font-size: clamp(34px, 11vw, 52px);
+    font-weight: 900;
+    color: #581c87;
+    margin: 16px 0 22px;
+    letter-spacing: 1.5px;
+    text-shadow: 0 3px 0 rgba(168, 85, 247, 0.12);
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .choice {
+    padding: 20px 8px;
+    font-size: 26px;
+    font-weight: 900;
+    font-family: inherit;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+    color: #3b3b98;
+    background: linear-gradient(180deg, #eef2ff, #dbe4ff);
+    box-shadow: 0 5px 0 #b8c4f0;
+    transition: transform 0.12s, box-shadow 0.12s, background 0.25s;
+    direction: ltr;
+  }
+  .choice:hover:not(:disabled) { transform: translateY(-3px); }
+  .choice:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #b8c4f0; }
+  .choice.correct {
+    background: linear-gradient(180deg, #86efac, #22c55e);
+    color: #fff;
+    box-shadow: 0 5px 0 #15803d;
+  }
+  .choice.wrong {
+    background: linear-gradient(180deg, #fca5a5, #ef4444);
+    color: #fff;
+    box-shadow: 0 5px 0 #b91c1c;
+  }
+  .choice:disabled { cursor: default; }
+
+  .feedback {
+    min-height: 28px;
+    margin-top: 16px;
+    font-weight: 900;
+    font-size: 17px;
+  }
+  .feedback.ok { color: #16a34a; }
+  .feedback.no { color: #dc2626; }
+
+  .stars {
+    font-size: 46px;
+    letter-spacing: 8px;
+    margin: 6px 0;
+    animation: pop 0.5s;
+  }
+  .scoreBox {
+    display: inline-block;
+    margin: 14px 0;
+    padding: 14px 30px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #fff3c4, #ffe0b2);
+    color: #8a5a00;
+    font-weight: 900;
+    font-size: 19px;
+  }
+  .statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .statBox {
+    background: #f8faff;
+    border-radius: 14px;
+    padding: 10px 6px;
+    border: 2px solid #e0e7ff;
+  }
+  .statBox .num {
+    font-size: 22px;
+    font-weight: 900;
+    color: #581c87;
+  }
+  .statBox .lbl {
+    font-size: 12px;
+    font-weight: 800;
+    color: #7b7ba3;
+    margin-top: 3px;
+  }
+  .teacher {
+    margin-top: 18px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #8b8bb0;
+  }
+
+  .confetti {
+    position: fixed;
+    top: -50px;
+    z-index: 999;
+    pointer-events: none;
+    animation: fall 1.8s linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(480deg); opacity: 0; }
+  }
+
+  @media (max-width: 380px) {
+    .choice { font-size: 22px; padding: 16px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- صفحه خوش‌آمد -->
+<div class="card" id="screen-welcome">
+  <div class="badge">👩‍🏫 آموزگار: شادابی نیا</div>
+  <h1>✖️ بازی ضرب ششم ابتدایی ✖️</h1>
+  <p class="sub">سلام قهرمان! اسمت را بنویس تا ماجراجویی ضرب شروع شود 😊</p>
+  <input id="nameInput" type="text" placeholder="نام خود را وارد کن..." maxlength="30" autocomplete="off">
+  <div class="error" id="nameError"></div>
+  <button class="btn" id="startBtn">شروع بازی 🚀</button>
+  <div class="teacher" style="margin-top:14px;">۱۵ سؤال | ۳ سطح دشواری</div>
+</div>
+
+<!-- صفحه بازی -->
+<div class="card hidden" id="screen-game">
+  <div class="topbar">
+    <div class="chip">🙋 <span id="studentName"></span></div>
+    <div class="chip score">⭐ <span id="score">۰</span></div>
+    <div class="chip streak">🔥 <span id="streak">۰</span></div>
+    <div class="chip timer" id="timerChip">⏱ <span id="timer">۲۰</span></div>
+  </div>
+
+  <div class="quote" id="quote"></div>
+
+  <div class="progress"><div id="progressFill"></div></div>
+  <div class="qmeta">
+    <span>سؤال <span id="qNum">۱</span> از <span id="qTotal">۱۵</span></span>
+    <span class="level-tag" id="levelTag">سطح ۱</span>
+  </div>
+
+  <div class="question" id="questionText"></div>
+  <div class="choices" id="choices"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<!-- صفحه پایان -->
+<div class="card hidden" id="screen-end">
+  <div class="stars" id="stars"></div>
+  <h2 id="endTitle"></h2>
+  <p class="sub" id="endMsg"></p>
+
+  <div class="statsGrid">
+    <div class="statBox">
+      <div class="num" id="statScore">۰</div>
+      <div class="lbl">امتیاز</div>
+    </div>
+    <div class="statBox">
+      <div class="num" id="statCorrect">۰</div>
+      <div class="lbl">پاسخ درست</div>
+    </div>
+    <div class="statBox">
+      <div class="num" id="statStreak">۰</div>
+      <div class="lbl">بهترین رکورد</div>
+    </div>
+  </div>
+
+  <button class="btn" id="againBtn">دوباره بازی کنم 🔄</button>
+  <div class="teacher">آموزگار: شادابی نیا</div>
+</div>
+
+<script>
+/* ==================== ابزارها ==================== */
+const $ = id => document.getElementById(id);
+const toFa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const shuffle = arr => arr.sort(() => Math.random() - 0.5);
+const pick = arr => arr[randInt(0, arr.length - 1)];
+
+/* ==================== تنظیمات ==================== */
+const TOTAL = 15;
+const TIME_PER_Q = 20;      // ثانیه
+const BASE_SCORE = 10;       // امتیاز پایه هر پاسخ درست
+
+const INSPIRE = [
+  'ضرب، کلیدِ سرعت در ریاضی است! 🚀',
+  'هر تمرین، تو را قوی‌تر می‌کند. 💪',
+  'اشتباه کردن بخشی از یادگیری است. 🌈',
+  'با تمرکز و دقت، هر مسئله‌ای حل می‌شود. 🎯',
+  'ذهن تو مثل عضله است؛ با تمرین قوی می‌شود! 🧠',
+  'تو از پس هر ضربی برمی‌آیی! ⭐',
+  'ریاضی، زبانِ جهان است و تو داری آن را یاد می‌گیری. 🌍',
+  'پشتکار، رمز موفقیت توست. 🔑'
+];
+
+const PRAISE = ['آفرین! 🎉', 'عالی بود! 👏', 'درست است! ⭐', 'تو یک نابغه‌ای! 🌟', 'چه سرعت خوبی! ⚡', 'درخشیدی! ✨'];
+const OOPS   = ['اشکالی ندارد! 💪', 'نزدیک بود! 🙈', 'دفعه بعد حتماً! 🌱', 'باز هم تلاش کن! 🌟'];
+
+/* ==================== وضعیت بازی ==================== */
+let studentName = '';
+let score = 0;
+let correctCount = 0;
+let streak = 0;
+let bestStreak = 0;
+let current = 0;
+let question = null;
+let locked = false;
+let timeLeft = TIME_PER_Q;
+let timerInterval = null;
+
+/* ==================== صدا ==================== */
+let audioCtx = null;
+function beep(freq, dur, type = 'sine', vol = 0.15) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.start();
+    o.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+const goodSound = () => { beep(880, 0.12); setTimeout(() => beep(1320, 0.18), 110); };
+const badSound  = () => { beep(240, 0.28, 'triangle', 0.12); };
+const timeSound = () => { beep(500, 0.08, 'square', 0.08); };
+
+/* ==================== ساخت سؤال ==================== */
+function makeQuestion(level) {
+  let a, b;
+  if (level === 1) {
+    // دو رقمی × یک رقمی
+    a = randInt(11, 49);
+    b = randInt(3, 9);
+  } else if (level === 2) {
+    // دو رقمی × دو رقمی
+    a = randInt(12, 49);
+    b = randInt(11, 29);
+  } else {
+    // سه رقمی × یک رقمی
+    a = randInt(101, 499);
+    b = randInt(3, 9);
+  }
+
+  const ans = a * b;
+
+  // ساخت گزینه‌های اشتباه منطقی
+  const set = new Set([ans]);
+  const offsets = [a * (b + 1), a * (b - 1), ans + a, ans - a, ans + b, ans - b, ans + 10, ans - 10, ans + 100, ans - 100];
+  shuffle(offsets);
+  for (const o of offsets) {
+    if (set.size >= 4) break;
+    if (o > 0 && o !== ans) set.add(o);
+  }
+  let guard = 0;
+  while (set.size < 4 && guard < 300) {
+    guard++;
+    const d = ans + randInt(-25, 25);
+    if (d > 0 && d !== ans) set.add(d);
+  }
+
+  return {
+    a, b, ans, level,
+    text: `${toFa(a)} × ${toFa(b)} = ?`,
+    choices: shuffle([...set])
+  };
+}
+
+/* ==================== نمایش صفحه‌ها ==================== */
+const screens = { welcome: $('screen-welcome'), game: $('screen-game'), end: $('screen-end') };
+function showScreen(name) {
+  Object.values(screens).forEach(s => s.classList.add('hidden'));
+  screens[name].classList.remove('hidden');
+}
+
+/* ==================== شروع بازی ==================== */
+function startGame() {
+  const val = $('nameInput').value.trim();
+  if (val.length < 2) {
+    $('nameError').textContent = 'لطفاً نامت را کامل بنویس 😊';
+    $('nameInput').classList.add('shake');
+    setTimeout(() => $('nameInput').classList.remove('shake'), 500);
+    return;
+  }
+  studentName = val;
+  $('nameError').textContent = '';
+  $('studentName').textContent = studentName;
+  $('quote').textContent = pick(INSPIRE);
+
+  score = 0;
+  correctCount = 0;
+  streak = 0;
+  bestStreak = 0;
+  current = 0;
+
+  $('score').textContent = toFa(0);
+  $('streak').textContent = toFa(0);
+  $('qTotal').textContent = toFa(TOTAL);
+  $('progressFill').style.width = '0%';
+  $('feedback').textContent = '';
+  $('feedback').className = 'feedback';
+
+  showScreen('game');
+  nextQuestion();
+}
+
+$('startBtn').addEventListener('click', startGame);
+$('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') startGame(); });
+
+/* ==================== سؤال بعدی ==================== */
+function nextQuestion() {
+  if (current >= TOTAL) { endGame(); return; }
+
+  current++;
+
+  // تعیین سطح: ۵ سؤال اول سطح ۱، ۵ سؤال بعدی سطح ۲، ۵ سؤال آخر سطح ۳
+  let level = 1;
+  if (current > 5) level = 2;
+  if (current > 10) level = 3;
+
+  $('qNum').textContent = toFa(current);
+  $('progressFill').style.width = ((current - 1) / TOTAL * 100) + '%';
+  $('levelTag').textContent = 'سطح ' + toFa(level);
+
+  question = makeQuestion(level);
+  $('questionText').textContent = question.text;
+  $('feedback').textContent = '';
+  $('feedback').className = 'feedback';
+
+  const box = $('choices');
+  box.innerHTML = '';
+  locked = false;
+
+  question.choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = toFa(c);
+    btn.dataset.val = c;
+    btn.addEventListener('click', () => checkAnswer(c, btn));
+    box.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+/* ==================== تایمر ==================== */
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIME_PER_Q;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 5 && timeLeft > 0) timeSound();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const chip = $('timerChip');
+  $('timer').textContent = toFa(timeLeft);
+  if (timeLeft <= 5) chip.classList.add('danger');
+  else chip.classList.remove('danger');
+}
+
+/* ==================== بررسی پاسخ ==================== */
+function checkAnswer(val, btn) {
+  if (locked) return;
+  locked = true;
+  clearInterval(timerInterval);
+  $('timerChip').classList.remove('danger');
+
+  const all = [...document.querySelectorAll('.choice')];
+  all.forEach(b => b.disabled = true);
+
+  if (val === question.ans) {
+    // امتیاز = امتیاز پایه + پاداش زمان + پاداش رکورد
+    const timeBonus = Math.floor(timeLeft / 2) * 2;
+    const streakBonus = streak >= 3 ? 5 : 0;
+    const gain = BASE_SCORE + timeBonus + streakBonus;
+    score += gain;
+    correctCount++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+
+    $('score').textContent = toFa(score);
+    $('streak').textContent = toFa(streak);
+    btn.classList.add('correct');
+
+    const bonusMsg = timeBonus > 0 ? ` (+${toFa(timeBonus)} پاداش زمان)` : '';
+    $('feedback').textContent = `${pick(PRAISE)}${bonusMsg}`;
+    $('feedback').className = 'feedback ok';
+    goodSound();
+    confetti();
+    setTimeout(nextQuestion, 1000);
+  } else {
+    streak = 0;
+    $('streak').textContent = toFa(0);
+    btn.classList.add('wrong');
+    all.forEach(b => {
+      if (Number(b.dataset.val) === question.ans) b.classList.add('correct');
+    });
+    $('feedback').textContent = `${pick(OOPS)} پاسخ درست: ${toFa(question.ans)}`;
+    $('feedback').className = 'feedback no';
+    badSound();
+    setTimeout(nextQuestion, 1800);
+  }
+}
+
+/* ==================== اتمام زمان ==================== */
+function timeUp() {
+  if (locked) return;
+  locked = true;
+  streak = 0;
+  $('streak').textContent = toFa(0);
+
+  const all = [...document.querySelectorAll('.choice')];
+  all.forEach(b => {
+    b.disabled = true;
+    if (Number(b.dataset.val) === question.ans) b.classList.add('correct');
+  });
+
+  $('feedback').textContent = `⏰ زمان تمام شد! پاسخ درست: ${toFa(question.ans)}`;
+  $('feedback').className = 'feedback no';
+  badSound();
+  setTimeout(nextQuestion, 1800);
+}
+
+/* ==================== پایان بازی ==================== */
+function endGame() {
+  clearInterval(timerInterval);
+  $('progressFill').style.width = '100%';
+  showScreen('end');
+
+  $('statScore').textContent = toFa(score);
+  $('statCorrect').textContent = toFa(correctCount) + ' از ' + toFa(TOTAL);
+  $('statStreak').textContent = toFa(bestStreak);
+
+  const pct = correctCount / TOTAL;
+  let stars, title, msg;
+
+  if (pct >= 0.9) {
+    stars = '⭐⭐⭐';
+    title = 'فوق‌العاده بود! 🏆';
+    msg = `${studentName} عزیز، تو در ضرب استاد شده‌ای! به خودت افتخار کن.`;
+  } else if (pct >= 0.6) {
+    stars = '⭐⭐';
+    title = 'خیلی خوب بود! 🎯';
+    msg = `${studentName} جان، با کمی تمرین بیشتر، ستاره‌ی سوم را هم می‌گیری!`;
+  } else {
+    stars = '⭐';
+    title = 'تلاش خوبی داشتی! 🌈';
+    msg = `${studentName} عزیز، ناامید نشو؛ تمرین کن و دوباره امتحان کن. تو می‌توانی!`;
+  }
+
+  $('stars').textContent = stars;
+  $('endTitle').textContent = title;
+  $('endMsg').textContent = msg;
+
+  if (pct >= 0.6) {
+    goodSound();
+    setTimeout(confetti, 200);
+    setTimeout(confetti, 600);
+    setTimeout(confetti, 1000);
+  }
+}
+
+/* ==================== دوباره ==================== */
+$('againBtn').addEventListener('click', () => {
+  $('nameInput').value = studentName;
+  showScreen('welcome');
+  $('nameError').textContent = '';
+});
+
+/* ==================== کاغذرنگی ==================== */
+function confetti() {
+  const emojis = ['🎉', '⭐', '✨', '🎈', '💫', '🌟', '🏆'];
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('span');
+    s.className = 'confetti';
+    s.textContent = emojis[randInt(0, emojis.length - 1)];
+    s.style.left = randInt(5, 95) + 'vw';
+    s.style.fontSize = randInt(18, 34) + 'px';
+    s.style.animationDelay = (Math.random() * 0.35) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 2400);
+  }
+}
+
+/* فوکوس اولیه */
+window.addEventListener('load', () => $('nameInput').focus());
+</script>
+</body>
+</html>
